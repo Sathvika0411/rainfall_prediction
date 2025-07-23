@@ -2,9 +2,10 @@ import streamlit as st
 import pickle
 import numpy as np
 
-# Load the model
+# Load the model from the dictionary
 with open('rainfall_model.pkl', 'rb') as file:
-    model = pickle.load(file)
+    data = pickle.load(file)
+    model = data["model"]  # This fixes the AttributeError
 
 st.title("Rainfall Prediction App")
 
