@@ -1,9 +1,9 @@
 import pandas as pd
-import joblib  # or use pickle
+import pickle  # or use pickle
 import numpy as np
 
 # Load the trained model
-model = joblib.load('model.pkl')
+model = pickle.load('rainfall_model.pkl')
 
 # Create a sample input dictionary
 sample_input = {
