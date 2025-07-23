@@ -1,36 +1,25 @@
-import streamlit as st
-import pickle
 import pandas as pd
+import joblib  # or use pickle
+import numpy as np
 
-# Load the model from pickle
-with open('rainfall_model.pkl', 'rb') as file:
-    data = pickle.load(file)
-    model = data["model"]  # assuming your pkl is a dict with 'model' key
+# Load the trained model
+model = joblib.load('model.pkl')
 
-st.title("🌦️ Rainfall Prediction App")
+# Create a sample input dictionary
+sample_input = {
+    'pressure': [1013],
+    'dewpoint': [20],
+    'humidity': [85],
+    'cloud': [7],
+    'sunshine': [3],
+    'winddirection': [120],
+    'windspeed': [15]
+}
 
-# Input fields for all 10 input features (excluding 'rainfall' which is the label)
-pressure = st.number_input("Enter Pressure (hPa)", min_value=900.0, max_value=1100.0, step=0.1)
-maxtemp = st.number_input("Enter Max Temperature (°C)", min_value=-10.0, max_value=50.0, step=0.1)
-temperature = st.number_input("Enter Average Temperature (°C)", min_value=-10.0, max_value=50.0, step=0.1)
-mintemp = st.number_input("Enter Min Temperature (°C)", min_value=-20.0, max_value=40.0, step=0.1)
-dewpoint = st.number_input("Enter Dew Point (°C)", min_value=-10.0, max_value=40.0, step=0.1)
-humidity = st.number_input("Enter Humidity (%)", min_value=0.0, max_value=100.0, step=0.1)
-cloud = st.number_input("Enter Cloud Cover (%)", min_value=0.0, max_value=100.0, step=1.0)
-sunshine = st.number_input("Enter Sunshine Duration (hours)", min_value=0.0, max_value=15.0, step=0.1)
-winddirection = st.number_input("Enter Wind Direction (°)", min_value=0.0, max_value=360.0, step=1.0)
-windspeed = st.number_input("Enter Wind Speed (km/h)", min_value=0.0, max_value=100.0, step=0.1)
+# Convert to DataFrame
+input_df = pd.DataFrame(sample_input)
 
-if st.button("Predict Rainfall"):
-    # Create input DataFrame for prediction (same column order as during training)
-    input_df = pd.DataFrame([[pressure, maxtemp, temperature, mintemp, dewpoint, humidity,
-                              cloud, sunshine, winddirection, windspeed]],
-                            columns=['pressure', 'maxtemp', 'temparature', 'mintemp', 'dewpoint',
-                                     'humidity', 'cloud', 'sunshine', 'winddirection', 'windspeed'])
+# Make prediction
+prediction = model.predict(input_df)
 
-    prediction = model.predict(input_df)
-
-    if prediction[0] == 1:
-        st.success("🌧️ Rainfall is likely.")
-    else:
-        st.info("☀️ No rainfall expected.")
+print(f"Predicted Rainfall: {prediction[0]}")
